@@ -22,7 +22,7 @@ func (h *Handler) GetLibraryList(w http.ResponseWriter, r *http.Request) {
 	}
 	size, err := strconv.Atoi(r.URL.Query().Get("size"))
 	if err != nil {
-		utils.Response(w, models.BadRequest, "", nil)
+		utils.Response(w, models.BadRequest, "Invalid type of parameter", nil)
 	}
 	city := r.URL.Query().Get("city")
 	if city == "" {
