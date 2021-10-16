@@ -6,6 +6,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"library/internal/config"
+	"library/internal/delivery"
+	repo2 "library/internal/repo"
+	usecase2 "library/internal/usecase"
+	"library/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -30,7 +34,16 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	pool = pool
+	repo := repo2.NewLibRepo(pool)
+	usecase := usecase2.NewLibUsecase(repo)
+	handler := delivery.NewHandler(usecase)
+
+	r.Use(middleware.CORSMiddleware)
+	api := r.PathPrefix("api/v1").Subrouter()
+	{
+		api.HandleFunc("/libraries/{libraryUid}/books", handler.GetBookList)
+		api.HandleFunc("/libraries", handler.GetLibraryList)
+	}
 
 	http.Handle("/", r)
 	log.Print("main running on: ", srv.Addr)

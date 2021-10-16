@@ -15,6 +15,10 @@ type Handler struct {
 	usecase internal.LibraryUsecase
 }
 
+func NewHandler(usecase internal.LibraryUsecase) *Handler {
+	return &Handler{usecase: usecase}
+}
+
 func (h *Handler) GetLibraryList(w http.ResponseWriter, r *http.Request) {
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	if err != nil {
