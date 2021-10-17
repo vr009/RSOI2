@@ -1,8 +1,8 @@
 package models
 
-import "github.com/gofrs/uuid"
+import "github.com/google/uuid"
 
-type Library struct {
+type LibraryResponse struct {
 	Id         uint      `json:"id"`
 	LibraryUid uuid.UUID `json:"library_uid"`
 	Name       string    `json:"name"`

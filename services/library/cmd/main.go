@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"library/internal/config"
-	"library/internal/delivery"
-	repo2 "library/internal/repo"
-	usecase2 "library/internal/usecase"
-	"library/middleware"
+	"lib/services/library/internal/config"
+	"lib/services/library/internal/delivery"
+	"lib/services/library/internal/repo"
+	"lib/services/library/internal/usecase"
+	"lib/services/library/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -34,8 +34,8 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	repo := repo2.NewLibRepo(pool)
-	usecase := usecase2.NewLibUsecase(repo)
+	repo := repo.NewLibRepo(pool)
+	usecase := usecase.NewLibUsecase(repo)
 	handler := delivery.NewHandler(usecase)
 
 	r.Use(middleware.CORSMiddleware)

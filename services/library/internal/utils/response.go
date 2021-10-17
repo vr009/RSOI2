@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"library/models"
+	"lib/services/models"
 	"net/http"
 )
 
