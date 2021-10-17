@@ -39,7 +39,7 @@ func run() error {
 	handler := delivery.NewHandler(usecase)
 
 	r.Use(middleware.CORSMiddleware)
-	api := r.PathPrefix("api/v1").Subrouter()
+	api := r.PathPrefix("/api/v1").Subrouter()
 	{
 		api.HandleFunc("/libraries/{libraryUid}/books", handler.GetBookList)
 		api.HandleFunc("/libraries", handler.GetLibraryList)

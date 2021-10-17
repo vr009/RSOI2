@@ -20,7 +20,7 @@ func (u *Usecase) GetReservationsInfo(name string) ([]models2.BookReservationRes
 
 func (u *Usecase) TakeBook(name string, req models2.TakeBookRequest) (models2.TakeBookResponse, models2.StatusCode) {
 	return u.repo.ReserveBook(name, req)
-} // TODO interface ret
+}
 
 func (u *Usecase) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBookRequest) models2.StatusCode {
 	return u.repo.ReturnBook(resUid, name, req)
