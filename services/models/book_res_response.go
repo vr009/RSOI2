@@ -17,7 +17,7 @@ type BookReservationResponse struct {
 type ReservationStatus string
 
 const (
-	Rented   ReservationStatus = "Rented"
-	Returned ReservationStatus = "Returned"
-	Expired  ReservationStatus = "Expired"
+	Rented   ReservationStatus = "RENTED"
+	Returned ReservationStatus = "RETURNED"
+	Expired  ReservationStatus = "EXPIRED"
 )
