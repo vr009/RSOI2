@@ -23,7 +23,7 @@ func main() {
 }
 func run() error {
 	r := mux.NewRouter()
-	srv := http.Server{Handler: r, Addr: fmt.Sprintf(":%s", "8000")}
+	srv := http.Server{Handler: r, Addr: fmt.Sprintf(":%s", "8100")}
 
 	conn, err := config.GetConnectionString()
 	if err != nil {
