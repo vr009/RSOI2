@@ -3,3 +3,66 @@ package reservation;
 
 import "google/protobuf/timestamp.proto";
 
+service ReservationService {
+
+  // Список библиотек в городе
+  rpc FetchReservations (ReservationFetchRequest) returns (ReservationFetchResponse);
+
+  rpc TakeBook (TakeBookRequest) returns (TakeBookResponse);
+
+  rpc ReturnBook (ReturnBookRequest) returns (ReturnBookResponse);
+}
+
+message ReturnBookRequest {
+  string reservationUid = 1;
+  string name = 2;
+  enum condition {
+    EXCELLENT = 0;
+    GOOD = 1;
+    BAD = 2;
+  }
+  google.protobuf.Timestamp date = 4;
+}
+
+message ReturnBookResponse {
+  string ok = 1;
+}
+
+message TakeBookRequest {
+  string name = 1;
+  string bookUid = 2;
+  string libraryUid = 3;
+  google.protobuf.Timestamp tillDate = 4;
+}
+
+message TakeBookResponse {
+  string reservationUid = 1;
+  enum status {
+    RENTED = 0;
+    RETURNED = 1;
+    EXPIRED = 2;
+  }
+  google.protobuf.Timestamp startDate = 3;
+  google.protobuf.Timestamp tillDate = 4;
+}
+
+// Сообщение с деталями запроса по библиотекам
+message ReservationFetchRequest {
+  string name = 1;
+}
+
+// Сообщение с деталями запроса по библиотекам
+message ReservationFetchResponseItem {
+  string reservationUid = 1;
+  enum status {
+    RENTED = 0;
+    RETURNED = 1;
+    EXPIRED = 2;
+  }
+  google.protobuf.Timestamp startDate = 3;
+  google.protobuf.Timestamp tillDate = 4;
+}
+
+message ReservationFetchResponse {
+  repeated ReservationFetchResponseItem items = 1;
+}

@@ -3,7 +3,7 @@ package rating;
 
 import "google/protobuf/timestamp.proto";
 
-service LibraryService {
+service RatingService {
 
   // Список библиотек в городе
   rpc GetRating (RatingRequest) returns (RatingResponse);
