@@ -2,3 +2,21 @@ syntax = "proto3";
 package rating;
 
 import "google/protobuf/timestamp.proto";
+
+service LibraryService {
+
+  // Список библиотек в городе
+  rpc GetRating (RatingRequest) returns (RatingResponse);
+
+}
+
+// Сообщение с деталями запроса по библиотекам
+message RatingRequest {
+  string name = 1;
+}
+
+// Сообщение с деталями запроса по книгам
+message RatingResponse {
+  int32 stars = 1;
+}
+
