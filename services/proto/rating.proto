@@ -1,0 +1,4 @@
+syntax = "proto3";
+package rating;
+
+import "google/protobuf/timestamp.proto";
