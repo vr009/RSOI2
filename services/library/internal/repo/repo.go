@@ -9,9 +9,9 @@ import (
 
 const (
 	// TODO count
-	GetBooksQuery = "WITH b AS (SELECT * FROM library_books WHERE library_id=$1 AND available_count>$2) " +
-		"SELECT lb.id, lb.book_uid, lb.name, lb.author, lb.genre, lb.condition, b.available_count, COUNT(*) FROM books lb " +
-		"INNER JOIN b ON b.book_id=lb.id" +
+	GetBooksQuery = "SELECT b.id, b.book_uid, b.name, b.author, b.genre, b.condition, lb.available_count, COUNT(*) FROM books b " +
+		"INNER JOIN library_books lb ON lb.book_id=b.id " + "INNER JOIN library l ON l.id=lb.library_id " +
+		"WHERE l.library_uid=$1 AND lb.available_count>$2 " +
 		"LIMIT $3 OFFSET $4"
 	GetLibsQuery = "SELECT id, library_uid, name, city, address, COUNT(*) FROM library WHERE city=$1 LIMIT $2 OFFSET $3"
 )
@@ -24,14 +24,14 @@ func NewLibRepo(conn *pgxpool.Pool) *LibRepo {
 	return &LibRepo{conn: conn}
 }
 
-func (lr *LibRepo) GetLibraries(page, size int, city string) ([]models.LibraryResponse, int, models.StatusCode) {
+func (lr *LibRepo) GetLibraries(page, size int64, city string) ([]models.LibraryResponse, int64, models.StatusCode) {
 	rows, err := lr.conn.Query(context.Background(), GetLibsQuery, city, page, size)
 	if err != nil {
 		return nil, 0, models.InternalError
 	}
 	var (
 		libs  []models.LibraryResponse
-		count int
+		count int64
 	)
 	for rows.Next() {
 		var lib models.LibraryResponse
@@ -44,7 +44,7 @@ func (lr *LibRepo) GetLibraries(page, size int, city string) ([]models.LibraryRe
 	return libs, count, models.OK
 }
 
-func (lr *LibRepo) GetBooks(page, size int, showAll bool, LibUid uuid.UUID) ([]models.LibraryBookResponse, int, models.StatusCode) {
+func (lr *LibRepo) GetBooks(page, size int64, showAll bool, LibUid uuid.UUID) ([]models.LibraryBookResponse, int64, models.StatusCode) {
 	includeZeroCountOfBooks := 0
 	if showAll {
 		includeZeroCountOfBooks = -1
@@ -56,7 +56,7 @@ func (lr *LibRepo) GetBooks(page, size int, showAll bool, LibUid uuid.UUID) ([]m
 	}
 	var (
 		books []models.LibraryBookResponse
-		count int
+		count int64
 	)
 	for rows.Next() {
 		var book models.LibraryBookResponse

@@ -1,6 +1,6 @@
 syntax = "proto3";
 package rating;
-
+option go_package = "lib/services/proto/rating";
 import "google/protobuf/timestamp.proto";
 
 service RatingService {

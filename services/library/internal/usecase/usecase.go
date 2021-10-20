@@ -14,7 +14,7 @@ func NewLibUsecase(repo internal.LibraryRepo) *LibUsecase {
 	return &LibUsecase{repo: repo}
 }
 
-func (lu *LibUsecase) GetLibrariesList(page, size int, city string) ([]models.LibraryPaginationResponse, models.StatusCode) {
+func (lu *LibUsecase) GetLibrariesList(page, size int64, city string) ([]models.LibraryPaginationResponse, models.StatusCode) {
 	libs, count, status := lu.repo.GetLibraries(page, size, city)
 	if status != models.OK {
 		return nil, status
@@ -23,7 +23,7 @@ func (lu *LibUsecase) GetLibrariesList(page, size int, city string) ([]models.Li
 	return []models.LibraryPaginationResponse{answer}, status
 }
 
-func (lu *LibUsecase) GetBooksList(page, size int, showAll bool, LibUid uuid.UUID) ([]models.LibraryBookPaginationResponse, models.StatusCode) {
+func (lu *LibUsecase) GetBooksList(page, size int64, showAll bool, LibUid uuid.UUID) ([]models.LibraryBookPaginationResponse, models.StatusCode) {
 	books, count, status := lu.repo.GetBooks(page, size, showAll, LibUid)
 	if status != models.OK {
 		return nil, status

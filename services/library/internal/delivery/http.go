@@ -33,7 +33,7 @@ func (h *Handler) GetLibraryList(w http.ResponseWriter, r *http.Request) {
 		utils.Response(w, models.BadRequest, "", nil)
 	}
 
-	libs, status := h.usecase.GetLibrariesList(page, size, city)
+	libs, status := h.usecase.GetLibrariesList(int64(page), int64(size), city)
 	body, err := json.Marshal(libs)
 	if err != nil {
 		utils.Response(w, models.InternalError, "", nil)
@@ -66,7 +66,7 @@ func (h *Handler) GetBookList(w http.ResponseWriter, r *http.Request) {
 		showAll = false
 	}
 
-	libs, status := h.usecase.GetBooksList(page, size, showAll, uid)
+	libs, status := h.usecase.GetBooksList(int64(page), int64(size), showAll, uid)
 	body, err := json.Marshal(libs)
 	if err != nil {
 		utils.Response(w, models.InternalError, "", nil)

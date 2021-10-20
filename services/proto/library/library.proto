@@ -1,6 +1,7 @@
 syntax = "proto3";
 package library;
 
+option go_package = "lib/services/proto/library";
 import "google/protobuf/timestamp.proto";
 
 service LibraryService {
@@ -45,6 +46,7 @@ message ItemBook {
     GOOD = 1;
     BAD = 2;
   }
+  Condition condition = 5;
   int32 availableCount = 6;
 }
 
@@ -52,14 +54,14 @@ message LibraryResponseItem {
   int64 page = 1;
   int64 size = 2;
   int64 totalElements = 3;
-  ItemLibrary item = 4;
+  repeated ItemLibrary item = 4;
 }
 
 message BookResponseItem {
   int64 page = 1;
   int64 size = 2;
   int64 totalElements = 3;
-  ItemBook item = 4;
+  repeated ItemBook item = 4;
 }
 
 // Ответ на получение библиотеки
