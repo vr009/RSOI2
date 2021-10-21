@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	models2 "lib/services/models"
 	"lib/services/proto/library"
 	"lib/services/proto/rating "
@@ -52,7 +53,7 @@ func (cl * Client) 	GetLibraries(page, size int64, city string) ([]models2.Libra
 	return libs, models2.OK
 }
 func (cl * Client) GetBooks(page, size int64, showAll bool, LibUid uuid.UUID) ([]models2.LibraryBookPaginationResponse, models2.StatusCode) {
-	request := &library.BookRequest{Page: page, Size: size, ShowAll: showAll}
+	request := &library.BookRequest{Page: page, Size: size, ShowAll: showAll, LibraryUid: LibUid.String()}
 	response, err := cl.LibraryServiceClient.FetchBooks(context.Background(), request)
 	if err != nil {
 		return nil, models2.InternalError
@@ -80,16 +81,92 @@ func (cl * Client) GetBooks(page, size int64, showAll bool, LibUid uuid.UUID) ([
 	}
 	return libs, models2.OK
 }
-func (cl * Client) GetReservations() ([]models2.BookReservationResponse, models2.StatusCode) {
+func (cl * Client) GetReservations(name string) ([]models2.BookReservationResponse, models2.StatusCode) {
+	request := &reservation.ReservationFetchRequest{Name: name}
+	response, err := cl.ReservationServiceClient.FetchReservations(context.Background(), request)
+	if err != nil {
+		return nil, models2.InternalError
+	}
+	resp := []models2.BookReservationResponse{}
+	for _, el := range response.Items {
+		uid, err := uuid.Parse(el.ReservationUid)
+		if err != nil {
+			return nil, models2.BadRequest
+		}
+		bookUid, err := uuid.Parse(el.BookUid)
+		if err != nil {
+			return nil, models2.BadRequest
+		}
+		libUid, err := uuid.Parse(el.LibraryUid)
+		if err != nil {
+			return nil, models2.BadRequest
+		}
+		resp = append(resp, models2.BookReservationResponse{
+			ReservationUid: uid,
+			Status: models2.ReservationStatus(el.Status.String()),
+			StartDate: el.StartDate.AsTime(),
+			TillDate: el.TillDate.AsTime(),
+			Book: models2.BookInfo{BookUid: bookUid},
+			Lib: models2.LibraryResponse{LibraryUid: libUid},
+		})
+	}
+	return resp, models2.OK
+}
 
-	return nil, 0
+func (cl * Client) TakeBook(name string, req models2.TakeBookRequest) (models2.TakeBookResponse, models2.StatusCode) {
+	request := &reservation.TakeBookRequest{
+		Name: name,
+		TillDate: timestamppb.New(req.TillDate),
+		BookUid: req.BookUid.String(),
+		LibraryUid: req.LibraryUid.String(),
+	}
+	response, err := cl.ReservationServiceClient.TakeBook(context.Background(), request)
+	if err != nil {
+		return models2.TakeBookResponse{}, models2.InternalError
+	}
+	resUid, err := uuid.Parse(response.ReservationUid)
+	if err != nil {
+		return models2.TakeBookResponse{}, models2.BadRequest
+	}
+	bookUid, err := uuid.Parse(response.BookUid)
+	if err != nil {
+		return models2.TakeBookResponse{}, models2.BadRequest
+	}
+	libUid, err := uuid.Parse(response.LibraryUid)
+	if err != nil {
+		return models2.TakeBookResponse{}, models2.BadRequest
+	}
+	resp := models2.TakeBookResponse{
+		ReservationUid: resUid,
+		Library: models2.LibraryResponse{LibraryUid: libUid},
+		Book: models2.BookInfo{BookUid: bookUid},
+		Status: models2.ReservationStatus(response.Status.String()),
+		StartDate: response.StartDate.AsTime(),
+		TillDate: response.TillDate.AsTime(),
+	}
+	return resp, 0
 }
-func (cl * Client) TakeBook() (models2.TakeBookResponse, models2.StatusCode) {
-	return models2.TakeBookResponse{}, 0
-}
-func (cl * Client) ReturnBook() models2.StatusCode {
+func (cl * Client) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBookRequest) models2.StatusCode {
+	request := &reservation.ReturnBookRequest{
+		ReservationUid: resUid.String(),
+		Name: name,
+		Condition: reservation.ReturnBookRequest_Condition(reservation.ReturnBookRequest_Condition_value[string(req.Condition)]),
+		Date: timestamppb.New(req.Date),
+	}
+	response, err := cl.ReservationServiceClient.ReturnBook(context.Background(), request)
+	if err != nil {
+		return models2.InternalError
+	}
+	if !response.Ok {
+		return models2.NotFound
+	}
 	return 0
 }
-func (cl * Client) GetRating() (models2.UserRatingResponse, models2.StatusCode) {
-	return models2.UserRatingResponse{}, 0
+func (cl * Client) GetRating(name string) (models2.UserRatingResponse, models2.StatusCode) {
+	request := &rating.RatingRequest{Name: name}
+	response, err := cl.RatingServiceClient.GetRating(context.Background(), request)
+	if err != nil {
+		return models2.UserRatingResponse{}, models2.BadRequest
+	}
+	return models2.UserRatingResponse{Stars: uint(response.Stars)}, 0
 }
