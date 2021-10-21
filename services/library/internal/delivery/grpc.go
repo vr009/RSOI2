@@ -66,3 +66,36 @@ func (h *GRPCHandler) FetchBooks(ctx context.Context, req *library.BookRequest) 
 	response.Items = append(response.Items, &responseItem)
 	return response, nil
 }
+
+func (h *GRPCHandler) GetBook(ctx context.Context, req *library.GetOneBookRequest) (*library.ItemBook, error) {
+	response := &library.ItemBook{}
+	uid, err := uuid.Parse(req.BookUid)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("%d", models.BadRequest))
+	}
+	book, st := h.usecase.GetBook(uid)
+	if st != models.OK {
+		return nil, errors.New(fmt.Sprintf("%d", models.BadRequest))
+	}
+	response.BookUid = book.BookUid.String()
+	response.Name = book.Name
+	response.Genre = book.Genre
+	return response, nil
+}
+
+func (h *GRPCHandler) GetLibrary(ctx context.Context, req *library.GetOneLibRequest) (*library.ItemLibrary, error) {
+	response := &library.ItemLibrary{}
+	uid, err := uuid.Parse(req.LibUid)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("%d", models.BadRequest))
+	}
+	book, st := h.usecase.GetLib(uid)
+	if st != models.OK {
+		return nil, errors.New(fmt.Sprintf("%d", models.BadRequest))
+	}
+	response.LibraryUid = book.LibraryUid.String()
+	response.Name = book.Name
+	response.City = book.City
+	response.Address = book.Address
+	return response, nil
+}

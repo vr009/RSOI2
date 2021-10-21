@@ -31,3 +31,11 @@ func (lu *LibUsecase) GetBooksList(page, size int64, showAll bool, LibUid uuid.U
 	answer := models.LibraryBookPaginationResponse{Page: page, PageSize: size, TotalElements: count, Items: books}
 	return []models.LibraryBookPaginationResponse{answer}, status
 }
+
+func (lu *LibUsecase) GetBook(bookUid uuid.UUID) (models.BookInfo, models.StatusCode) {
+	return lu.repo.GetBook(bookUid)
+}
+
+func (lu *LibUsecase) GetLib(libUid uuid.UUID) (models.LibraryResponse, models.StatusCode) {
+	return lu.repo.GetLib(libUid)
+}

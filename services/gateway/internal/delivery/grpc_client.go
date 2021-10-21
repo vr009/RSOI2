@@ -25,6 +25,26 @@ func NewGRPCClient(Rating, Reservation, Library grpc.ClientConnInterface) *Clien
 	}
 }
 
+func (cl *Client) GetBook(bookId uuid.UUID) (models2.BookInfo, models2.StatusCode) {
+	request := &library.GetOneBookRequest{BookUid: bookId.String()}
+	response, err := cl.LibraryServiceClient.GetBook(context.Background(), request)
+	if err != nil {
+		return models2.BookInfo{}, models2.InternalError
+	}
+	book := models2.BookInfo{BookUid: bookId, Name: response.Name, Author: response.Author, Genre: response.Genre}
+	return book, models2.OK
+}
+
+func (cl *Client) GetLibrary(libId uuid.UUID) (models2.LibraryResponse, models2.StatusCode) {
+	request := &library.GetOneLibRequest{LibUid: libId.String()}
+	response, err := cl.LibraryServiceClient.GetLibrary(context.Background(), request)
+	if err != nil {
+		return models2.LibraryResponse{}, models2.InternalError
+	}
+	lib := models2.LibraryResponse{LibraryUid: libId, Name: response.Name, City: response.City, Address: response.Address}
+	return lib, models2.OK
+}
+
 func (cl *Client) GetLibraries(page, size int64, city string) ([]models2.LibraryPaginationResponse, models2.StatusCode) {
 	request := &library.LibraryRequest{Page: page, Size: size, City: city}
 	response, err := cl.LibraryServiceClient.FetchLibs(context.Background(), request)

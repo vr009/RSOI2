@@ -13,7 +13,9 @@ const (
 		"INNER JOIN library_books lb ON lb.book_id=b.id " + "INNER JOIN library l ON l.id=lb.library_id " +
 		"WHERE l.library_uid=$1 AND lb.available_count>$2 " +
 		"LIMIT $3 OFFSET $4"
-	GetLibsQuery = "SELECT id, library_uid, name, city, address, COUNT(*) FROM library WHERE city=$1 LIMIT $2 OFFSET $3"
+	GetLibsQuery    = "SELECT id, library_uid, name, city, address, COUNT(*) FROM library WHERE city=$1 LIMIT $2 OFFSET $3"
+	GetOneBookQuery = "SELECT name, author, genre FROM books WHERE book_uid=$1"
+	GetOneLibQuery  = "SELECT name, city, address FROM library WHERE library_uid=$1"
 )
 
 type LibRepo struct {
@@ -68,4 +70,24 @@ func (lr *LibRepo) GetBooks(page, size int64, showAll bool, LibUid uuid.UUID) ([
 		books = append(books, book)
 	}
 	return books, count, models.OK
+}
+
+func (lr *LibRepo) GetBook(bookUid uuid.UUID) (models.BookInfo, models.StatusCode) {
+	row := lr.conn.QueryRow(context.Background(), GetOneBookQuery, bookUid)
+	book := models.BookInfo{BookUid: bookUid}
+	err := row.Scan(&book.Name, &book.Author, &book.Genre)
+	if err != nil {
+		return models.BookInfo{}, models.InternalError
+	}
+	return book, models.OK
+}
+
+func (lr *LibRepo) GetLib(libUid uuid.UUID) (models.LibraryResponse, models.StatusCode) {
+	row := lr.conn.QueryRow(context.Background(), GetOneLibQuery, libUid)
+	lib := models.LibraryResponse{LibraryUid: libUid}
+	err := row.Scan(&lib.Name, &lib.City, &lib.Address)
+	if err != nil {
+		return models.LibraryResponse{}, models.InternalError
+	}
+	return lib, models.OK
 }

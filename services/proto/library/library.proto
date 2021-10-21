@@ -12,6 +12,19 @@ service LibraryService {
   // Список книг в библиотеке
   rpc FetchBooks (BookRequest) returns (BookResponse);
 
+  // Получить либу по id
+  rpc GetLibrary(GetOneLibRequest) returns (ItemLibrary);
+
+  // Получить книгу по id
+  rpc GetBook(GetOneBookRequest) returns (ItemBook);
+}
+
+message GetOneLibRequest {
+  string libUid = 1;
+}
+
+message GetOneBookRequest {
+  string bookUid = 1;
 }
 
 // Сообщение с деталями запроса по библиотекам
