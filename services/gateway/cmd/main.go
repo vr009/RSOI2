@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"gateway/internal/config"
+	"gateway/internal/delivery"
+	"gateway/internal/usecase"
+	"gateway/middleware"
 	"github.com/gorilla/mux"
 	"google.golang.org/grpc"
-	"lib/services/gateway/internal/config"
-	"lib/services/gateway/internal/delivery"
-	"lib/services/gateway/internal/usecase"
-	"lib/services/library/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -21,6 +21,10 @@ func main() {
 }
 func run() error {
 	r := mux.NewRouter()
+	os.Setenv("LIB_SERVICE_URL", "127.0.0.1:50051")
+	os.Setenv("RATING_SERVICE_URL", "127.0.0.1:50053")
+	os.Setenv("RESERVATION_SERVICE_URL", "127.0.0.1:50052")
+
 	srv := http.Server{Handler: r, Addr: fmt.Sprintf(":%s", "8000")}
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
@@ -34,12 +38,12 @@ func run() error {
 		return err
 	}
 	defer libConn.Close()
-	reservationConn, err := grpc.Dial(clients.ReservationURL)
+	reservationConn, err := grpc.Dial(clients.ReservationURL, opts...)
 	if err != nil {
 		return err
 	}
 	defer reservationConn.Close()
-	ratingConn, err := grpc.Dial(clients.RatingURL)
+	ratingConn, err := grpc.Dial(clients.RatingURL, opts...)
 	if err != nil {
 		return err
 	}
@@ -52,7 +56,7 @@ func run() error {
 	api := r.PathPrefix("/api/v1").Subrouter()
 	{
 		api.HandleFunc("/libraries", gatewayHandler.GetLibraries).Methods("GET")
-		api.HandleFunc("/libraries/{libraryUid}/books", gatewayHandler.GetLibraries).Methods("GET")
+		api.HandleFunc("/libraries/{libraryUid}/books", gatewayHandler.GetBooks).Methods("GET")
 		api.HandleFunc("/reservations", gatewayHandler.GetReservations).Methods("GET")
 		api.HandleFunc("/reservations", gatewayHandler.GetBook).Methods("POST")
 		api.HandleFunc("/reservations/{reservationUid}/return", gatewayHandler.ReturnBook).Methods("POST")

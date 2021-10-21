@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"lib/services/library/internal"
-	"lib/services/library/internal/utils"
-	"lib/services/models"
+	"library/internal"
+	"library/internal/utils"
+	"library/models"
 	"net/http"
 	"strconv"
 )

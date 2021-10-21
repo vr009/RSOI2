@@ -2,8 +2,8 @@ package config
 
 import (
 	"errors"
+	"gateway/models"
 	"github.com/joho/godotenv"
-	"lib/services/models"
 	"os"
 )
 

@@ -1,9 +1,9 @@
 version: "3"
 services:
-  nginx:
-    build: ./internal/nginx/.
+  gateway:
+    build: ./services/gateway/.
     ports:
-     - 80:80
+     - 8000:8000
     links:
       - library
       - rating
@@ -12,14 +12,14 @@ services:
   library:
     build: ./services/library/.
     ports:
-      - 8100:8100
+      - 50051:50051
 
   reservation:
     build: ./services/reservation/.
     ports:
-      - 8200:8200
+      - 50052:50052
 
   rating:
     build: ./services/rating/.
     ports:
-      - 8300:8300
+      - 50053:50053

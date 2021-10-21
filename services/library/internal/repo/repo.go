@@ -4,18 +4,19 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"lib/services/models"
+	"library/models"
 )
 
 const (
 	// TODO count
-	GetBooksQuery = "SELECT b.id, b.book_uid, b.name, b.author, b.genre, b.condition, lb.available_count, COUNT(*) FROM books b " +
-		"INNER JOIN library_books lb ON lb.book_id=b.id " + "INNER JOIN library l ON l.id=lb.library_id " +
+	GetBooksQuery = "SELECT b.id, b.book_uid, b.name, b.author, b.genre, b.condition, lb.available_count, COUNT(*) FROM libraries.books b " +
+		"INNER JOIN libraries.library_books lb ON lb.book_id=b.id " + "INNER JOIN libraries.library l ON l.id=lb.library_id " +
 		"WHERE l.library_uid=$1 AND lb.available_count>$2 " +
+		"GROUP BY b.id, lb.available_count " +
 		"LIMIT $3 OFFSET $4"
-	GetLibsQuery    = "SELECT id, library_uid, name, city, address, COUNT(*) FROM library WHERE city=$1 LIMIT $2 OFFSET $3"
-	GetOneBookQuery = "SELECT name, author, genre FROM books WHERE book_uid=$1"
-	GetOneLibQuery  = "SELECT name, city, address FROM library WHERE library_uid=$1"
+	GetLibsQuery    = "SELECT id, library_uid, name, city, address, COUNT(*) FROM libraries.library WHERE city=$1 GROUP BY(library.id) LIMIT $2 OFFSET $3"
+	GetOneBookQuery = "SELECT name, author, genre FROM libraries.books WHERE book_uid=$1 LIMIT 1"
+	GetOneLibQuery  = "SELECT name, city, address FROM libraries.library WHERE library_uid=$1 LIMIT 1"
 )
 
 type LibRepo struct {
@@ -27,7 +28,7 @@ func NewLibRepo(conn *pgxpool.Pool) *LibRepo {
 }
 
 func (lr *LibRepo) GetLibraries(page, size int64, city string) ([]models.LibraryResponse, int64, models.StatusCode) {
-	rows, err := lr.conn.Query(context.Background(), GetLibsQuery, city, page, size)
+	rows, err := lr.conn.Query(context.Background(), GetLibsQuery, city, size, page-1)
 	if err != nil {
 		return nil, 0, models.InternalError
 	}
@@ -52,7 +53,7 @@ func (lr *LibRepo) GetBooks(page, size int64, showAll bool, LibUid uuid.UUID) ([
 		includeZeroCountOfBooks = -1
 	}
 
-	rows, err := lr.conn.Query(context.Background(), GetBooksQuery, LibUid, includeZeroCountOfBooks, page, size)
+	rows, err := lr.conn.Query(context.Background(), GetBooksQuery, LibUid, includeZeroCountOfBooks, size, page-1)
 	if err != nil {
 		return nil, 0, models.InternalError
 	}
@@ -73,7 +74,7 @@ func (lr *LibRepo) GetBooks(page, size int64, showAll bool, LibUid uuid.UUID) ([
 }
 
 func (lr *LibRepo) GetBook(bookUid uuid.UUID) (models.BookInfo, models.StatusCode) {
-	row := lr.conn.QueryRow(context.Background(), GetOneBookQuery, bookUid)
+	row := lr.conn.QueryRow(context.Background(), GetOneBookQuery, bookUid.String())
 	book := models.BookInfo{BookUid: bookUid}
 	err := row.Scan(&book.Name, &book.Author, &book.Genre)
 	if err != nil {
@@ -83,7 +84,7 @@ func (lr *LibRepo) GetBook(bookUid uuid.UUID) (models.BookInfo, models.StatusCod
 }
 
 func (lr *LibRepo) GetLib(libUid uuid.UUID) (models.LibraryResponse, models.StatusCode) {
-	row := lr.conn.QueryRow(context.Background(), GetOneLibQuery, libUid)
+	row := lr.conn.QueryRow(context.Background(), GetOneLibQuery, libUid.String())
 	lib := models.LibraryResponse{LibraryUid: libUid}
 	err := row.Scan(&lib.Name, &lib.City, &lib.Address)
 	if err != nil {

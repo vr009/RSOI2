@@ -1,9 +1,9 @@
 package usecase
 
 import (
+	"gateway/internal"
+	models2 "gateway/models"
 	"github.com/google/uuid"
-	"lib/services/gateway/internal"
-	models2 "lib/services/models"
 )
 
 type GatewayUsecase struct {

@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	models2 "lib/services/models"
-	"lib/services/reservation/internal/usecase"
-	"lib/services/reservation/internal/utils"
 	"net/http"
+	"reservation/internal/usecase"
+	"reservation/internal/utils"
+	models2 "reservation/models"
 )
 
 type ResHandler struct {

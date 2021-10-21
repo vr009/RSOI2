@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"lib/services/library/internal"
-	"lib/services/models"
-	"lib/services/proto/library"
+	"library/internal"
+	"library/models"
+	"library/proto/library"
+	"log"
 )
 
 type GRPCHandler struct {
@@ -23,6 +24,7 @@ func (h *GRPCHandler) FetchLibs(ctx context.Context, req *library.LibraryRequest
 	size := req.Size
 	city := req.City
 	libs, status := h.usecase.GetLibrariesList(page, size, city)
+	log.Println("HERE")
 	if status != models.OK {
 		return nil, errors.New(fmt.Sprintf("%d", status))
 	}
@@ -36,6 +38,7 @@ func (h *GRPCHandler) FetchLibs(ctx context.Context, req *library.LibraryRequest
 			responseItem.Item = append(responseItem.Item, &itemLib)
 		}
 	}
+	response.Items = append(response.Items, &responseItem)
 	return response, nil
 }
 
@@ -80,6 +83,7 @@ func (h *GRPCHandler) GetBook(ctx context.Context, req *library.GetOneBookReques
 	response.BookUid = book.BookUid.String()
 	response.Name = book.Name
 	response.Genre = book.Genre
+	response.Author = book.Author
 	return response, nil
 }
 

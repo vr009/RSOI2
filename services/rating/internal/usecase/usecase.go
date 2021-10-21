@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	models2 "lib/services/models"
-	"lib/services/rating/internal"
+	"rating/internal"
+	models2 "rating/models"
 )
 
 type RatingUsecase struct {

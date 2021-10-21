@@ -2,12 +2,13 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 	"github.com/jackc/pgx/v4/pgxpool"
-	models2 "lib/services/models"
+	models2 "rating/models"
 )
 
 const (
-	SelectRating = "SELECT * FROM rating WHERE username=$1"
+	SelectRating = "SELECT stars FROM ratings.rating WHERE username=$1"
 )
 
 type Repo struct {
@@ -21,7 +22,10 @@ func NewRepo(conn *pgxpool.Pool) *Repo {
 func (r *Repo) FetchRating(name string) (models2.UserRatingResponse, models2.StatusCode) {
 	resp := models2.UserRatingResponse{}
 	row := r.conn.QueryRow(context.Background(), SelectRating, name)
-	err := row.Scan(resp.Stars)
+	err := row.Scan(&resp.Stars)
+	if err == sql.ErrNoRows {
+		return models2.UserRatingResponse{}, models2.NotFound
+	}
 	if err != nil {
 		return models2.UserRatingResponse{}, models2.InternalError
 	}

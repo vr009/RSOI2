@@ -1,6 +1,6 @@
 package internal
 
-import models2 "lib/services/models"
+import models2 "rating/models"
 
 type RatingUsecase interface {
 	GetRating(name string) (models2.UserRatingResponse, models2.StatusCode)

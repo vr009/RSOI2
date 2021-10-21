@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"github.com/google/uuid"
-	models2 "lib/services/models"
-	"lib/services/reservation/internal"
+	"reservation/internal"
+	models2 "reservation/models"
 )
 
 type Usecase struct {

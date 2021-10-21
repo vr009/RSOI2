@@ -1,4 +1,4 @@
-FROM golang:1.16 AS builder
+FROM golang:1.17 AS builder
 
 ENV GO111MODULE=on
 
@@ -8,8 +8,10 @@ WORKDIR /opt/app
 
 COPY . .
 
-EXPOSE 8300
+EXPOSE 50053
 
-RUN go build ./cmd/main.go
+RUN go mod tidy
 
-CMD ./main
+RUN go build ./cmd/grpc_main.go
+
+CMD ./grpc_main

@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"lib/services/library/middleware"
-	"lib/services/reservation/internal/config"
-	"lib/services/reservation/internal/delivery"
-	repo "lib/services/reservation/internal/repo"
-	usecase "lib/services/reservation/internal/usecase"
+	"reservation/internal/config"
+	"reservation/internal/delivery"
+	"reservation/internal/repo"
+	"reservation/internal/usecase"
+
 	"log"
 	"net/http"
 	"os"
 )
 
-func main() {
+func main2() {
 	if err := run(); err != nil {
 		log.Print(err)
 		os.Exit(1)
@@ -38,7 +38,6 @@ func run() error {
 	usecase := usecase.NewUsecase(repo)
 	handler := delivery.NewResHandler(usecase)
 
-	r.Use(middleware.CORSMiddleware)
 	api := r.PathPrefix("/api/v1").Subrouter()
 	{
 		api.HandleFunc("/reservations", handler.ReserveBook).Methods("POST")

@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"github.com/google/uuid"
-	"lib/services/library/internal"
-	"lib/services/models"
+	"library/internal"
+	"library/models"
 )
 
 type LibUsecase struct {

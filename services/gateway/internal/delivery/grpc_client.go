@@ -2,13 +2,13 @@ package delivery
 
 import (
 	"context"
+	models2 "gateway/models"
+	"gateway/proto/library"
+	"gateway/proto/rating"
+	"gateway/proto/reservation"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	models2 "lib/services/models"
-	"lib/services/proto/library"
-	"lib/services/proto/rating"
-	"lib/services/proto/reservation"
 )
 
 type Client struct {
@@ -68,6 +68,7 @@ func (cl *Client) GetLibraries(page, size int64, city string) ([]models2.Library
 				Address:    item.Address,
 				City:       item.City,
 			})
+			libs = append(libs, libEl)
 		}
 	}
 	return libs, models2.OK
@@ -97,6 +98,7 @@ func (cl *Client) GetBooks(page, size int64, showAll bool, LibUid uuid.UUID) ([]
 				Condition:      models2.BookCondition(item.Condition.String()),
 				AvailableCount: item.AvailableCount,
 			})
+			libs = append(libs, libEl)
 		}
 	}
 	return libs, models2.OK
@@ -180,7 +182,7 @@ func (cl *Client) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBo
 	if !response.Ok {
 		return models2.NotFound
 	}
-	return 0
+	return models2.Deleted
 }
 func (cl *Client) GetRating(name string) (models2.UserRatingResponse, models2.StatusCode) {
 	request := &rating.RatingRequest{Name: name}

@@ -5,17 +5,16 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"lib/services/library/internal/config"
-	"lib/services/library/internal/delivery"
-	"lib/services/library/internal/repo"
-	"lib/services/library/internal/usecase"
-	"lib/services/library/middleware"
+	"library/internal/config"
+	"library/internal/delivery"
+	"library/internal/repo"
+	"library/internal/usecase"
 	"log"
 	"net/http"
 	"os"
 )
 
-func main() {
+func main2() {
 	if err := run(); err != nil {
 		log.Print(err)
 		os.Exit(1)
@@ -37,8 +36,6 @@ func run() error {
 	repo := repo.NewLibRepo(pool)
 	usecase := usecase.NewLibUsecase(repo)
 	handler := delivery.NewHandler(usecase)
-
-	r.Use(middleware.CORSMiddleware)
 	api := r.PathPrefix("/api/v1").Subrouter()
 	{
 		api.HandleFunc("/libraries/{libraryUid}/books", handler.GetBookList)

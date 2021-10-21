@@ -4,18 +4,18 @@ import (
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc"
-	"lib/services/proto/reservation"
-	"lib/services/reservation/internal/config"
-	"lib/services/reservation/internal/delivery"
-	"lib/services/reservation/internal/repo"
-	"lib/services/reservation/internal/usecase"
 	"log"
 	"net"
 	"os"
+	"reservation/internal/config"
+	"reservation/internal/delivery"
+	"reservation/internal/repo"
+	"reservation/internal/usecase"
+	"reservation/proto/reservation"
 )
 
 const (
-	grpcPort = "50051"
+	grpcPort = "50052"
 )
 
 func main() {

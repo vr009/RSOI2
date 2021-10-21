@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
-	models2 "lib/services/models"
+	models2 "reservation/models"
 	"time"
 )
 
@@ -12,14 +12,14 @@ const (
 	SelectReservation = "SELECT r.reservation_uid, r.status, r.start_date, r.till_date, " +
 		"r.book_uid, " +
 		"r.library_uid " +
-		"FROM reservation r " +
+		"FROM reservations.reservation r " +
 		"WHERE r.username=$1"
 
-	InsertReservation = "INSERT INTO reservation " +
-		"reservation_uid, username, book_uid, library_uid, status, start_date, till_date " +
+	InsertReservation = "INSERT INTO reservations.reservation " +
+		"(reservation_uid, username, book_uid, library_uid, status, start_date, till_date )" +
 		"VALUES($1,$2,$3,$4,$5,$6,$7)"
 
-	DeleteReservation = "DELETE FROM reservation WHERE reservation_uid=$1"
+	DeleteReservation = "DELETE FROM reservations.reservation WHERE username=$1"
 )
 
 type Repo struct {
@@ -69,5 +69,5 @@ func (r *Repo) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBookR
 	if err != nil {
 		return models2.NotFound
 	}
-	return models2.OK
+	return models2.Deleted
 }

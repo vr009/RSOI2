@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"lib/services/models"
-	"lib/services/proto/rating "
-	"lib/services/rating/internal"
+	"rating/internal"
+	"rating/models"
+	"rating/proto/rating"
 )
 
 type GRPCHandler struct {
@@ -24,7 +24,5 @@ func (h *GRPCHandler) GetRating(ctx context.Context, req *rating.RatingRequest) 
 		return nil, errors.New(fmt.Sprintf("%d", status))
 	}
 
-	return &rating.RatingResponse{Stars: int32(rate.Stars)} , nil
+	return &rating.RatingResponse{Stars: int32(rate.Stars)}, nil
 }
-
-

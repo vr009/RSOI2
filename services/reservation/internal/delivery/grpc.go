@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"lib/services/models"
-	"lib/services/proto/reservation"
-	"lib/services/reservation/internal/usecase"
+	"reservation/internal/usecase"
+	"reservation/models"
+	"reservation/proto/reservation"
 )
 
 type GRPCHandler struct {
@@ -35,8 +35,8 @@ func (h *GRPCHandler) FetchReservations(ctx context.Context,
 		item.ReservationUid = res.ReservationUid.String()
 		item.StartDate = timestamppb.New(res.StartDate)
 		item.TillDate = timestamppb.New(res.TillDate)
-		item.LibraryUid = res.Book.BookUid.String()
-		item.BookUid = res.Lib.LibraryUid.String()
+		item.LibraryUid = res.Lib.LibraryUid.String()
+		item.BookUid = res.Book.BookUid.String()
 		responseItem = append(responseItem, &item)
 	}
 	response.Items = responseItem
@@ -84,7 +84,7 @@ func (h *GRPCHandler) ReturnBook(ctx context.Context, req *reservation.ReturnBoo
 		return nil, err
 	}
 	status := h.usecase.ReturnBook(uid, name, models.ReturnBookRequest{Date: date, Condition: models.BookCondition(condition)})
-	if status != models.OK {
+	if status != models.Deleted {
 		return &reservation.ReturnBookResponse{Ok: false}, errors.New(fmt.Sprintf("%d", status))
 	}
 	return &reservation.ReturnBookResponse{Ok: true}, nil

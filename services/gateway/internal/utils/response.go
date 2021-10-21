@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"lib/services/models"
+	"gateway/models"
 	"net/http"
 )
 
@@ -20,6 +20,9 @@ func Response(w http.ResponseWriter, code models.StatusCode, description string,
 		w.Header().Set("Description", description)
 	case models.InternalError:
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Description", description)
+	case models.Deleted:
+		w.WriteHeader(http.StatusNoContent)
 		w.Header().Set("Description", description)
 	}
 

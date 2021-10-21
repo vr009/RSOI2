@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"lib/services/models"
 	"net/http"
+	"reservation/models"
 )
 
 func Response(w http.ResponseWriter, code models.StatusCode, description string, body []byte) {

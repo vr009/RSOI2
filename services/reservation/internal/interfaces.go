@@ -2,7 +2,7 @@ package internal
 
 import (
 	"github.com/google/uuid"
-	models2 "lib/services/models"
+	models2 "reservation/models"
 )
 
 type ResUsecase interface {

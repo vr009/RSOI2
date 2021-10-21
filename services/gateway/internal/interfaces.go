@@ -1,8 +1,8 @@
 package internal
 
 import (
+	models2 "gateway/models"
 	"github.com/google/uuid"
-	models2 "lib/services/models"
 )
 
 type Usecase interface {
