@@ -17,7 +17,8 @@ const (
 	GetLibsQuery    = "SELECT id, library_uid, name, city, address, COUNT(*) FROM libraries.library WHERE city=$1 GROUP BY(library.id) LIMIT $2 OFFSET $3"
 	GetOneBookQuery = "SELECT name, author, genre FROM libraries.books WHERE book_uid=$1 LIMIT 1"
 	GetOneLibQuery  = "SELECT name, city, address FROM libraries.library WHERE library_uid=$1 LIMIT 1"
-	UpdateBookQuery = "UPDATE libraries.library_books SET available_count=available_count+$1 WHERE book_uid=$2"
+	UpdateBookQuery = "WITH b AS (SELECT id FROM libraries.books WHERE book_uid=$2)" +
+		"UPDATE libraries.library_books SET available_count=available_count+$1 FROM b WHERE book_id=b.id"
 )
 
 type LibRepo struct {

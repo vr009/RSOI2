@@ -86,12 +86,10 @@ func (r *Repo) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBookR
 }
 
 func (r *Repo) GetReservation(resUid uuid.UUID) (models2.BookReservationResponse, models2.StatusCode) {
-	res, err := r.conn.Query(context.Background(), GetReservation, resUid.String())
-	if err != nil {
-		return models2.BookReservationResponse{}, models2.InternalError
-	}
+	res := r.conn.QueryRow(context.Background(), GetReservation, resUid.String())
 	reservation := models2.BookReservationResponse{}
-	err = res.Scan(&reservation.ReservationUid, &reservation.Status, &reservation.StartDate, &reservation.TillDate,
+	reservation.ReservationUid = resUid
+	err := res.Scan(&reservation.ReservationUid, &reservation.Status, &reservation.StartDate, &reservation.TillDate,
 		&reservation.Book.BookUid, &reservation.Lib.LibraryUid)
 	if err != nil {
 		return models2.BookReservationResponse{}, models2.InternalError
