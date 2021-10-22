@@ -12,6 +12,6 @@ EXPOSE 50052
 
 RUN go mod tidy
 
-RUN go build ./cmd/grpc_main.go
+RUN go build -o reservation ./cmd/grpc_main.go
 
-CMD ./grpc_main
+CMD ["./reservation"]

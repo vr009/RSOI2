@@ -12,6 +12,6 @@ EXPOSE 50053
 
 RUN go mod tidy
 
-RUN go build ./cmd/grpc_main.go
+RUN go build -o rating ./cmd/grpc_main.go
 
-CMD ./grpc_main
+CMD ["./rating"]

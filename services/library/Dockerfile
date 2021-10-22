@@ -12,6 +12,6 @@ EXPOSE 50051
 
 RUN go mod tidy
 
-RUN go build ./cmd/grpc_main.go
+RUN go build -o library ./cmd/grpc_main.go
 
-CMD ./grpc_main
+CMD ["./library"]

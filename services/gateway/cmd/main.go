@@ -21,10 +21,13 @@ func main() {
 }
 func run() error {
 	r := mux.NewRouter()
-	os.Setenv("LIB_SERVICE_URL", "127.0.0.1:50051")
-	os.Setenv("RATING_SERVICE_URL", "127.0.0.1:50053")
-	os.Setenv("RESERVATION_SERVICE_URL", "127.0.0.1:50052")
+	//os.Setenv("LIB_SERVICE_URL", "127.0.0.1:50051")
+	//os.Setenv("RATING_SERVICE_URL", "127.0.0.1:50053")
+	//os.Setenv("RESERVATION_SERVICE_URL", "127.0.0.1:50052")
 
+	log.Printf("lib: %s", os.Getenv("LIB_SERVICE_URL"))
+	log.Printf("rating: %s", os.Getenv("RATING_SERVICE_URL"))
+	log.Printf("reservation: %s", os.Getenv("RESERVATION_SERVICE_URL"))
 	srv := http.Server{Handler: r, Addr: fmt.Sprintf(":%s", "8000")}
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
