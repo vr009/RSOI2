@@ -11,6 +11,11 @@ service ReservationService {
 
   rpc ReturnBook (ReturnBookRequest) returns (ReturnBookResponse);
 
+  rpc GetReservation(GetReservationRequest) returns (ReservationFetchResponseItem);
+}
+
+message GetReservationRequest {
+  string resUid = 1;
 }
 
 message ReturnBookRequest {

@@ -25,3 +25,7 @@ func (u *Usecase) TakeBook(name string, req models2.TakeBookRequest) (models2.Ta
 func (u *Usecase) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBookRequest) models2.StatusCode {
 	return u.repo.ReturnBook(resUid, name, req)
 }
+
+func (u *Usecase) GetReservation(resUid uuid.UUID) (models2.BookReservationResponse, models2.StatusCode) {
+	return u.repo.GetReservation(resUid)
+}

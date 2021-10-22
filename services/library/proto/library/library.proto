@@ -17,6 +17,17 @@ service LibraryService {
 
   // Получить книгу по id
   rpc GetBook(GetOneBookRequest) returns (ItemBook);
+
+  rpc UpdateBookCount(UpdateBookCountRequest) returns(UpdateBookCountResponse);
+}
+
+message UpdateBookCountRequest {
+  string bookUid = 1;
+  int32 num = 2;
+}
+
+message UpdateBookCountResponse {
+  bool ok = 1;
 }
 
 message GetOneLibRequest {

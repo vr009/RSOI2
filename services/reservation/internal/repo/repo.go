@@ -19,7 +19,13 @@ const (
 		"(reservation_uid, username, book_uid, library_uid, status, start_date, till_date )" +
 		"VALUES($1,$2,$3,$4,$5,$6,$7)"
 
-	DeleteReservation = "DELETE FROM reservations.reservation WHERE username=$1"
+	UpdateReservation = "UPDATE reservations.reservation SET status=$1 WHERE username=$2"
+
+	GetReservation = "SELECT r.reservation_uid, r.status, r.start_date, r.till_date, " +
+		"r.book_uid, " +
+		"r.library_uid " +
+		"FROM reservations.reservation r " +
+		"WHERE r.reservation_uid=$1"
 )
 
 type Repo struct {
@@ -65,9 +71,30 @@ func (r *Repo) ReserveBook(name string, req models2.TakeBookRequest) (models2.Ta
 	return reservation, models2.OK
 }
 func (r *Repo) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBookRequest) models2.StatusCode {
-	_, err := r.conn.Exec(context.Background(), DeleteReservation, name)
+	var status models2.ReservationStatus
+	if req.Date.Unix() < time.Now().Unix() {
+		status = models2.Expired
+	} else {
+		status = models2.Rented
+	}
+
+	_, err := r.conn.Exec(context.Background(), UpdateReservation, status, name)
 	if err != nil {
 		return models2.NotFound
 	}
 	return models2.Deleted
+}
+
+func (r *Repo) GetReservation(resUid uuid.UUID) (models2.BookReservationResponse, models2.StatusCode) {
+	res, err := r.conn.Query(context.Background(), GetReservation, resUid.String())
+	if err != nil {
+		return models2.BookReservationResponse{}, models2.InternalError
+	}
+	reservation := models2.BookReservationResponse{}
+	err = res.Scan(&reservation.ReservationUid, &reservation.Status, &reservation.StartDate, &reservation.TillDate,
+		&reservation.Book.BookUid, &reservation.Lib.LibraryUid)
+	if err != nil {
+		return models2.BookReservationResponse{}, models2.InternalError
+	}
+	return reservation, models2.OK
 }

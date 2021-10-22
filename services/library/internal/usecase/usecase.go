@@ -39,3 +39,7 @@ func (lu *LibUsecase) GetBook(bookUid uuid.UUID) (models.BookInfo, models.Status
 func (lu *LibUsecase) GetLib(libUid uuid.UUID) (models.LibraryResponse, models.StatusCode) {
 	return lu.repo.GetLib(libUid)
 }
+
+func (lu *LibUsecase) UpdateBookCount(bookUid uuid.UUID, num int) models.StatusCode {
+	return lu.repo.UpdateBookCount(bookUid, num)
+}

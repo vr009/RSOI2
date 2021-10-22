@@ -89,3 +89,24 @@ func (h *GRPCHandler) ReturnBook(ctx context.Context, req *reservation.ReturnBoo
 	}
 	return &reservation.ReturnBookResponse{Ok: true}, nil
 }
+
+func (h *GRPCHandler) GetReservation(ctx context.Context, req *reservation.GetReservationRequest) (*reservation.ReservationFetchResponseItem, error) {
+	resUidStr := req.ResUid
+	resUid, err := uuid.Parse(resUidStr)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("%d", models.BadRequest))
+	}
+	res, st := h.usecase.GetReservation(resUid)
+	if st != models.OK {
+		return nil, errors.New(fmt.Sprintf("%d", models.InternalError))
+	}
+	item := &reservation.ReservationFetchResponseItem{
+		ReservationUid: res.ReservationUid.String(),
+		LibraryUid:     res.Lib.LibraryUid.String(),
+		BookUid:        res.Book.BookUid.String(),
+		Status:         reservation.ReservationFetchResponseItem_Status(reservation.ReservationFetchResponseItem_Status_value[string(res.Status)]),
+		TillDate:       timestamppb.New(res.TillDate),
+		StartDate:      timestamppb.New(res.StartDate),
+	}
+	return item, err
+}

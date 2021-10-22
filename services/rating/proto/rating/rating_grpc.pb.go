@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion7
 type RatingServiceClient interface {
 	// Список библиотек в городе
 	GetRating(ctx context.Context, in *RatingRequest, opts ...grpc.CallOption) (*RatingResponse, error)
+	// изменить рейтинг
+	RatingUpdate(ctx context.Context, in *RatingUpdateRequest, opts ...grpc.CallOption) (*RatingUpdateResponse, error)
 }
 
 type ratingServiceClient struct {
@@ -39,12 +41,23 @@ func (c *ratingServiceClient) GetRating(ctx context.Context, in *RatingRequest, 
 	return out, nil
 }
 
+func (c *ratingServiceClient) RatingUpdate(ctx context.Context, in *RatingUpdateRequest, opts ...grpc.CallOption) (*RatingUpdateResponse, error) {
+	out := new(RatingUpdateResponse)
+	err := c.cc.Invoke(ctx, "/rating.RatingService/RatingUpdate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RatingServiceServer is the server API for RatingService service.
 // All implementations should embed UnimplementedRatingServiceServer
 // for forward compatibility
 type RatingServiceServer interface {
 	// Список библиотек в городе
 	GetRating(context.Context, *RatingRequest) (*RatingResponse, error)
+	// изменить рейтинг
+	RatingUpdate(context.Context, *RatingUpdateRequest) (*RatingUpdateResponse, error)
 }
 
 // UnimplementedRatingServiceServer should be embedded to have forward compatible implementations.
@@ -53,6 +66,9 @@ type UnimplementedRatingServiceServer struct {
 
 func (UnimplementedRatingServiceServer) GetRating(context.Context, *RatingRequest) (*RatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRating not implemented")
+}
+func (UnimplementedRatingServiceServer) RatingUpdate(context.Context, *RatingUpdateRequest) (*RatingUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RatingUpdate not implemented")
 }
 
 // UnsafeRatingServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -84,6 +100,24 @@ func _RatingService_GetRating_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RatingService_RatingUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RatingUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RatingServiceServer).RatingUpdate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rating.RatingService/RatingUpdate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RatingServiceServer).RatingUpdate(ctx, req.(*RatingUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RatingService_ServiceDesc is the grpc.ServiceDesc for RatingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +128,10 @@ var RatingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRating",
 			Handler:    _RatingService_GetRating_Handler,
+		},
+		{
+			MethodName: "RatingUpdate",
+			Handler:    _RatingService_RatingUpdate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -17,6 +17,7 @@ const (
 	GetLibsQuery    = "SELECT id, library_uid, name, city, address, COUNT(*) FROM libraries.library WHERE city=$1 GROUP BY(library.id) LIMIT $2 OFFSET $3"
 	GetOneBookQuery = "SELECT name, author, genre FROM libraries.books WHERE book_uid=$1 LIMIT 1"
 	GetOneLibQuery  = "SELECT name, city, address FROM libraries.library WHERE library_uid=$1 LIMIT 1"
+	UpdateBookQuery = "UPDATE libraries.library_books SET available_count=available_count+$1 WHERE book_uid=$2"
 )
 
 type LibRepo struct {
@@ -91,4 +92,12 @@ func (lr *LibRepo) GetLib(libUid uuid.UUID) (models.LibraryResponse, models.Stat
 		return models.LibraryResponse{}, models.InternalError
 	}
 	return lib, models.OK
+}
+
+func (lr *LibRepo) UpdateBookCount(bookUid uuid.UUID, num int) models.StatusCode {
+	_, err := lr.conn.Exec(context.Background(), UpdateBookQuery, num, bookUid.String())
+	if err != nil {
+		return models.InternalError
+	}
+	return models.OK
 }

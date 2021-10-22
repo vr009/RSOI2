@@ -21,6 +21,7 @@ type ReservationServiceClient interface {
 	FetchReservations(ctx context.Context, in *ReservationFetchRequest, opts ...grpc.CallOption) (*ReservationFetchResponse, error)
 	TakeBook(ctx context.Context, in *TakeBookRequest, opts ...grpc.CallOption) (*TakeBookResponse, error)
 	ReturnBook(ctx context.Context, in *ReturnBookRequest, opts ...grpc.CallOption) (*ReturnBookResponse, error)
+	GetReservation(ctx context.Context, in *GetReservationRequest, opts ...grpc.CallOption) (*ReservationFetchResponseItem, error)
 }
 
 type reservationServiceClient struct {
@@ -58,6 +59,15 @@ func (c *reservationServiceClient) ReturnBook(ctx context.Context, in *ReturnBoo
 	return out, nil
 }
 
+func (c *reservationServiceClient) GetReservation(ctx context.Context, in *GetReservationRequest, opts ...grpc.CallOption) (*ReservationFetchResponseItem, error) {
+	out := new(ReservationFetchResponseItem)
+	err := c.cc.Invoke(ctx, "/library.ReservationService/GetReservation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReservationServiceServer is the server API for ReservationService service.
 // All implementations should embed UnimplementedReservationServiceServer
 // for forward compatibility
@@ -65,6 +75,7 @@ type ReservationServiceServer interface {
 	FetchReservations(context.Context, *ReservationFetchRequest) (*ReservationFetchResponse, error)
 	TakeBook(context.Context, *TakeBookRequest) (*TakeBookResponse, error)
 	ReturnBook(context.Context, *ReturnBookRequest) (*ReturnBookResponse, error)
+	GetReservation(context.Context, *GetReservationRequest) (*ReservationFetchResponseItem, error)
 }
 
 // UnimplementedReservationServiceServer should be embedded to have forward compatible implementations.
@@ -79,6 +90,9 @@ func (UnimplementedReservationServiceServer) TakeBook(context.Context, *TakeBook
 }
 func (UnimplementedReservationServiceServer) ReturnBook(context.Context, *ReturnBookRequest) (*ReturnBookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReturnBook not implemented")
+}
+func (UnimplementedReservationServiceServer) GetReservation(context.Context, *GetReservationRequest) (*ReservationFetchResponseItem, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetReservation not implemented")
 }
 
 // UnsafeReservationServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -146,6 +160,24 @@ func _ReservationService_ReturnBook_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReservationService_GetReservation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReservationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).GetReservation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/library.ReservationService/GetReservation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).GetReservation(ctx, req.(*GetReservationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReservationService_ServiceDesc is the grpc.ServiceDesc for ReservationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -165,7 +197,11 @@ var ReservationService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "ReturnBook",
 			Handler:    _ReservationService_ReturnBook_Handler,
 		},
+		{
+			MethodName: "GetReservation",
+			Handler:    _ReservationService_GetReservation_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "reservation.proto",
+	Metadata: "reservation/reservation.proto",
 }

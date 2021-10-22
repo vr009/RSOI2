@@ -9,6 +9,7 @@ import (
 
 const (
 	SelectRating = "SELECT stars FROM ratings.rating WHERE username=$1"
+	UpdateRating = "UPDATE ratings.rating SET stars=stars+$1 WHERE username=$2"
 )
 
 type Repo struct {
@@ -30,4 +31,12 @@ func (r *Repo) FetchRating(name string) (models2.UserRatingResponse, models2.Sta
 		return models2.UserRatingResponse{}, models2.InternalError
 	}
 	return resp, models2.OK
+}
+
+func (r *Repo) UpdateRating(name string, updateNumber int32) models2.StatusCode {
+	_, err := r.conn.Exec(context.Background(), UpdateRating, updateNumber, name)
+	if err != nil {
+		return models2.InternalError
+	}
+	return models2.OK
 }

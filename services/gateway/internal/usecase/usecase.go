@@ -4,6 +4,7 @@ import (
 	"gateway/internal"
 	models2 "gateway/models"
 	"github.com/google/uuid"
+	"time"
 )
 
 type GatewayUsecase struct {
@@ -49,6 +50,17 @@ func (u *GatewayUsecase) GetReservationInfo(name string) ([]models2.BookReservat
 	return reservations, models2.OK
 }
 func (u *GatewayUsecase) TakeBook(name string, req models2.TakeBookRequest) (models2.TakeBookResponse, models2.StatusCode) {
+	reservations, st := u.client.GetReservations(name)
+	count := 0
+	for _, el := range reservations {
+		if el.Status == models2.Rented {
+			count++
+		}
+	}
+	rating, st := u.client.GetRating(name)
+	if count*10 > int(rating.Stars) {
+		return models2.TakeBookResponse{}, models2.Forbidden
+	}
 	resp, st := u.client.TakeBook(name, req)
 	if st != models2.OK {
 		return models2.TakeBookResponse{}, st
@@ -72,13 +84,32 @@ func (u *GatewayUsecase) TakeBook(name string, req models2.TakeBookRequest) (mod
 	if st != models2.OK {
 		return models2.TakeBookResponse{}, st
 	}
+	st = u.client.UpdateBooksCount(resp.Book.BookUid, -1)
+	if st != models2.OK {
+		return models2.TakeBookResponse{}, st
+	}
 	resp.Rating.Stars = ratingInfo.Stars
-
 	return resp, models2.OK
 }
 func (u *GatewayUsecase) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBookRequest) models2.StatusCode {
-	st := u.client.ReturnBook(resUid, name, req)
-	return st
+	reservation, st := u.client.GetReservation(resUid)
+	if st != models2.OK {
+		return models2.NotFound
+	}
+	book, st := u.client.GetBook(reservation.Book.BookUid)
+	if st != models2.OK {
+		return models2.BadRequest
+	}
+	if req.Date.Unix() < time.Now().Unix() || book.Condition != req.Condition {
+		u.client.UpdateRating(name, -10)
+	} else {
+		u.client.UpdateRating(name, 1)
+	}
+	st = u.client.UpdateBooksCount(book.BookUid, 1)
+	if st != models2.OK {
+		return st
+	}
+	return u.client.ReturnBook(resUid, name, req)
 }
 func (u *GatewayUsecase) GetRating(name string) (models2.UserRatingResponse, models2.StatusCode) {
 	rating, st := u.client.GetRating(name)

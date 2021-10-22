@@ -26,6 +26,7 @@ type LibraryServiceClient interface {
 	GetLibrary(ctx context.Context, in *GetOneLibRequest, opts ...grpc.CallOption) (*ItemLibrary, error)
 	// Получить книгу по id
 	GetBook(ctx context.Context, in *GetOneBookRequest, opts ...grpc.CallOption) (*ItemBook, error)
+	UpdateBookCount(ctx context.Context, in *UpdateBookCountRequest, opts ...grpc.CallOption) (*UpdateBookCountResponse, error)
 }
 
 type libraryServiceClient struct {
@@ -72,6 +73,15 @@ func (c *libraryServiceClient) GetBook(ctx context.Context, in *GetOneBookReques
 	return out, nil
 }
 
+func (c *libraryServiceClient) UpdateBookCount(ctx context.Context, in *UpdateBookCountRequest, opts ...grpc.CallOption) (*UpdateBookCountResponse, error) {
+	out := new(UpdateBookCountResponse)
+	err := c.cc.Invoke(ctx, "/library.LibraryService/UpdateBookCount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LibraryServiceServer is the server API for LibraryService service.
 // All implementations should embed UnimplementedLibraryServiceServer
 // for forward compatibility
@@ -84,6 +94,7 @@ type LibraryServiceServer interface {
 	GetLibrary(context.Context, *GetOneLibRequest) (*ItemLibrary, error)
 	// Получить книгу по id
 	GetBook(context.Context, *GetOneBookRequest) (*ItemBook, error)
+	UpdateBookCount(context.Context, *UpdateBookCountRequest) (*UpdateBookCountResponse, error)
 }
 
 // UnimplementedLibraryServiceServer should be embedded to have forward compatible implementations.
@@ -101,6 +112,9 @@ func (UnimplementedLibraryServiceServer) GetLibrary(context.Context, *GetOneLibR
 }
 func (UnimplementedLibraryServiceServer) GetBook(context.Context, *GetOneBookRequest) (*ItemBook, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBook not implemented")
+}
+func (UnimplementedLibraryServiceServer) UpdateBookCount(context.Context, *UpdateBookCountRequest) (*UpdateBookCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBookCount not implemented")
 }
 
 // UnsafeLibraryServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -186,6 +200,24 @@ func _LibraryService_GetBook_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LibraryService_UpdateBookCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateBookCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LibraryServiceServer).UpdateBookCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/library.LibraryService/UpdateBookCount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LibraryServiceServer).UpdateBookCount(ctx, req.(*UpdateBookCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LibraryService_ServiceDesc is the grpc.ServiceDesc for LibraryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -209,7 +241,11 @@ var LibraryService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetBook",
 			Handler:    _LibraryService_GetBook_Handler,
 		},
+		{
+			MethodName: "UpdateBookCount",
+			Handler:    _LibraryService_UpdateBookCount_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "library.proto",
+	Metadata: "library/library.proto",
 }

@@ -31,7 +31,7 @@ func (cl *Client) GetBook(bookId uuid.UUID) (models2.BookInfo, models2.StatusCod
 	if err != nil {
 		return models2.BookInfo{}, models2.InternalError
 	}
-	book := models2.BookInfo{BookUid: bookId, Name: response.Name, Author: response.Author, Genre: response.Genre}
+	book := models2.BookInfo{BookUid: bookId, Name: response.Name, Author: response.Author, Genre: response.Genre, Condition: models2.BookCondition(response.Condition)}
 	return book, models2.OK
 }
 
@@ -191,4 +191,52 @@ func (cl *Client) GetRating(name string) (models2.UserRatingResponse, models2.St
 		return models2.UserRatingResponse{}, models2.BadRequest
 	}
 	return models2.UserRatingResponse{Stars: uint(response.Stars)}, 0
+}
+
+func (cl *Client) UpdateRating(name string, num int32) models2.StatusCode {
+	request := &rating.RatingUpdateRequest{Name: name, Add: num}
+	response, err := cl.RatingServiceClient.RatingUpdate(context.Background(), request)
+	if err != nil || !response.Ok {
+		return models2.InternalError
+	}
+	return models2.OK
+}
+
+func (cl *Client) GetReservation(resUid uuid.UUID) (models2.BookReservationResponse, models2.StatusCode) {
+	request := &reservation.GetReservationRequest{ResUid: resUid.String()}
+	res, err := cl.ReservationServiceClient.GetReservation(context.Background(), request)
+	if err != nil {
+		return models2.BookReservationResponse{}, models2.InternalError
+	}
+	uid, err := uuid.Parse(res.ReservationUid)
+	if err != nil {
+		return models2.BookReservationResponse{}, models2.BadRequest
+	}
+	bookUid, err := uuid.Parse(res.BookUid)
+	if err != nil {
+		return models2.BookReservationResponse{}, models2.InternalError
+	}
+	libUid, err := uuid.Parse(res.LibraryUid)
+	if err != nil {
+		return models2.BookReservationResponse{}, models2.InternalError
+	}
+
+	ret := models2.BookReservationResponse{
+		ReservationUid: uid,
+		Status:         models2.ReservationStatus(res.Status.String()),
+		StartDate:      res.StartDate.AsTime(),
+		TillDate:       res.TillDate.AsTime(),
+		Book:           models2.BookInfo{BookUid: bookUid},
+		Lib:            models2.LibraryResponse{LibraryUid: libUid},
+	}
+	return ret, models2.OK
+}
+
+func (cl *Client) UpdateBooksCount(bookUid uuid.UUID, num int) models2.StatusCode {
+	request := &library.UpdateBookCountRequest{BookUid: bookUid.String(), Num: int32(num)}
+	resp, err := cl.LibraryServiceClient.UpdateBookCount(context.Background(), request)
+	if err != nil || !resp.Ok {
+		return models2.InternalError
+	}
+	return models2.OK
 }

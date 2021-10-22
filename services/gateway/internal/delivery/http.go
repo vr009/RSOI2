@@ -37,7 +37,7 @@ func (h *GatewayHandler) GetLibraries(w http.ResponseWriter, r *http.Request) {
 	}
 
 	libs, status := h.usecase.GetLibList(int64(page), int64(size), city)
-	body, err := json.Marshal(libs)
+	body, err := json.Marshal(libs[0])
 	if err != nil {
 		utils.Response(w, models.InternalError, "", nil)
 		return
@@ -73,8 +73,8 @@ func (h *GatewayHandler) GetBooks(w http.ResponseWriter, r *http.Request) {
 		showAll = false
 	}
 
-	libs, status := h.usecase.GetBookList(int64(page), int64(size), showAll, uid)
-	body, err := json.Marshal(libs)
+	books, status := h.usecase.GetBookList(int64(page), int64(size), showAll, uid)
+	body, err := json.Marshal(books[0])
 	if err != nil {
 		utils.Response(w, models.InternalError, "", nil)
 		return

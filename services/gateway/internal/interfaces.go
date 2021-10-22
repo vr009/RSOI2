@@ -23,4 +23,7 @@ type ApiClient interface {
 	GetRating(name string) (models2.UserRatingResponse, models2.StatusCode)
 	GetBook(bookId uuid.UUID) (models2.BookInfo, models2.StatusCode)
 	GetLibrary(libId uuid.UUID) (models2.LibraryResponse, models2.StatusCode)
+	UpdateRating(name string, num int32) models2.StatusCode
+	GetReservation(resUid uuid.UUID) (models2.BookReservationResponse, models2.StatusCode)
+	UpdateBooksCount(bookUid uuid.UUID, num int) models2.StatusCode
 }

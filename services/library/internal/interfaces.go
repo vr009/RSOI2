@@ -10,6 +10,7 @@ type LibraryUsecase interface {
 	GetBooksList(page, size int64, showAll bool, libUid uuid.UUID) ([]models2.LibraryBookPaginationResponse, models2.StatusCode)
 	GetBook(bookUid uuid.UUID) (models2.BookInfo, models2.StatusCode)
 	GetLib(libUid uuid.UUID) (models2.LibraryResponse, models2.StatusCode)
+	UpdateBookCount(bookUid uuid.UUID, num int) models2.StatusCode
 }
 
 type LibraryRepo interface {
@@ -17,4 +18,5 @@ type LibraryRepo interface {
 	GetBooks(page, size int64, showAll bool, LibUid uuid.UUID) ([]models2.LibraryBookResponse, int64, models2.StatusCode)
 	GetBook(bookUid uuid.UUID) (models2.BookInfo, models2.StatusCode)
 	GetLib(libUid uuid.UUID) (models2.LibraryResponse, models2.StatusCode)
+	UpdateBookCount(bookUid uuid.UUID, num int) models2.StatusCode
 }

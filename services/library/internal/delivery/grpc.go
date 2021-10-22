@@ -103,3 +103,15 @@ func (h *GRPCHandler) GetLibrary(ctx context.Context, req *library.GetOneLibRequ
 	response.Address = book.Address
 	return response, nil
 }
+
+func (h *GRPCHandler) UpdateBookCount(ctx context.Context, req *library.UpdateBookCountRequest) (*library.UpdateBookCountResponse, error) {
+	uid, err := uuid.Parse(req.BookUid)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("%d", models.BadRequest))
+	}
+	st := h.usecase.UpdateBookCount(uid, int(req.Num))
+	if st != models.OK {
+		return nil, errors.New(fmt.Sprintf("%d", models.InternalError))
+	}
+	return &library.UpdateBookCountResponse{Ok: true}, nil
+}
