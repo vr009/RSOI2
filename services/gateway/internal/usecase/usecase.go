@@ -100,7 +100,7 @@ func (u *GatewayUsecase) ReturnBook(resUid uuid.UUID, name string, req models2.R
 	if st != models2.OK {
 		return models2.BadRequest
 	}
-	if req.Date.Unix() < time.Now().Unix() || book.Condition != req.Condition {
+	if req.Date.Unix() > time.Now().Unix() || book.Condition != req.Condition {
 		u.client.UpdateRating(name, -10)
 	} else {
 		u.client.UpdateRating(name, 1)

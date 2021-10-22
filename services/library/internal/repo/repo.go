@@ -15,7 +15,7 @@ const (
 		"GROUP BY b.id, lb.available_count " +
 		"LIMIT $3 OFFSET $4"
 	GetLibsQuery    = "SELECT id, library_uid, name, city, address, COUNT(*) FROM libraries.library WHERE city=$1 GROUP BY(library.id) LIMIT $2 OFFSET $3"
-	GetOneBookQuery = "SELECT name, author, genre FROM libraries.books WHERE book_uid=$1 LIMIT 1"
+	GetOneBookQuery = "SELECT name, author, genre, condition FROM libraries.books WHERE book_uid=$1 LIMIT 1"
 	GetOneLibQuery  = "SELECT name, city, address FROM libraries.library WHERE library_uid=$1 LIMIT 1"
 	UpdateBookQuery = "WITH b AS (SELECT id FROM libraries.books WHERE book_uid=$2)" +
 		"UPDATE libraries.library_books SET available_count=available_count+$1 FROM b WHERE book_id=b.id"
@@ -78,7 +78,7 @@ func (lr *LibRepo) GetBooks(page, size int64, showAll bool, LibUid uuid.UUID) ([
 func (lr *LibRepo) GetBook(bookUid uuid.UUID) (models.BookInfo, models.StatusCode) {
 	row := lr.conn.QueryRow(context.Background(), GetOneBookQuery, bookUid.String())
 	book := models.BookInfo{BookUid: bookUid}
-	err := row.Scan(&book.Name, &book.Author, &book.Genre)
+	err := row.Scan(&book.Name, &book.Author, &book.Genre, &book.Condition)
 	if err != nil {
 		return models.BookInfo{}, models.InternalError
 	}

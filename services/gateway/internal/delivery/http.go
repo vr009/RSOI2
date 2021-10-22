@@ -162,8 +162,12 @@ func (h *GatewayHandler) GetBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *GatewayHandler) ReturnBook(w http.ResponseWriter, r *http.Request) {
+	bookReqParsed := models.ReturnBookRequestPreParsed{}
 	bookReq := models.ReturnBookRequest{}
-	err := json.NewDecoder(r.Body).Decode(&bookReq)
+	err := json.NewDecoder(r.Body).Decode(&bookReqParsed)
+
+	bookReq.Condition = bookReqParsed.Condition
+	bookReq.Date, err = time.Parse(layout, bookReqParsed.Date)
 
 	name := r.Header.Get("X-User-Name")
 	vars := mux.Vars(r)

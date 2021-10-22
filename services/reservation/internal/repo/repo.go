@@ -72,7 +72,7 @@ func (r *Repo) ReserveBook(name string, req models2.TakeBookRequest) (models2.Ta
 }
 func (r *Repo) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBookRequest) models2.StatusCode {
 	var status models2.ReservationStatus
-	if req.Date.Unix() < time.Now().Unix() {
+	if req.Date.Unix() > time.Now().Unix() {
 		status = models2.Expired
 	} else {
 		status = models2.Rented

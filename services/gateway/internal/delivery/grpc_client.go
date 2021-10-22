@@ -31,7 +31,8 @@ func (cl *Client) GetBook(bookId uuid.UUID) (models2.BookInfo, models2.StatusCod
 	if err != nil {
 		return models2.BookInfo{}, models2.InternalError
 	}
-	book := models2.BookInfo{BookUid: bookId, Name: response.Name, Author: response.Author, Genre: response.Genre, Condition: models2.BookCondition(response.Condition)}
+	condition := library.ItemBook_Condition_name[int32(response.Condition)]
+	book := models2.BookInfo{BookUid: bookId, Name: response.Name, Author: response.Author, Genre: response.Genre, Condition: models2.BookCondition(condition)}
 	return book, models2.OK
 }
 

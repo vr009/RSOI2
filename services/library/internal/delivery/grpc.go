@@ -84,6 +84,7 @@ func (h *GRPCHandler) GetBook(ctx context.Context, req *library.GetOneBookReques
 	response.Name = book.Name
 	response.Genre = book.Genre
 	response.Author = book.Author
+	response.Condition = library.ItemBook_Condition(library.ItemBook_Condition_value[string(book.Condition)])
 	return response, nil
 }
 
