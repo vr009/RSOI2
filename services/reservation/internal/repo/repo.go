@@ -19,7 +19,7 @@ const (
 		"(reservation_uid, username, book_uid, library_uid, status, start_date, till_date )" +
 		"VALUES($1,$2,$3,$4,$5,$6,$7)"
 
-	UpdateReservation = "UPDATE reservations.reservation SET status=$1 WHERE username=$2"
+	UpdateReservation = "UPDATE reservations.reservation SET status=$1 WHERE reservation_uid=$2"
 
 	GetReservation = "SELECT r.reservation_uid, r.status, r.start_date, r.till_date, " +
 		"r.book_uid, " +
@@ -75,10 +75,10 @@ func (r *Repo) ReturnBook(resUid uuid.UUID, name string, req models2.ReturnBookR
 	if req.Date.Unix() > time.Now().Unix() {
 		status = models2.Expired
 	} else {
-		status = models2.Rented
+		status = models2.Returned
 	}
 
-	_, err := r.conn.Exec(context.Background(), UpdateReservation, status, name)
+	_, err := r.conn.Exec(context.Background(), UpdateReservation, status, resUid.String())
 	if err != nil {
 		return models2.NotFound
 	}

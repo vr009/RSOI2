@@ -2,7 +2,7 @@ package delivery
 
 import (
 	"encoding/json"
-	"gateway/internal/usecase"
+	"gateway/internal"
 	"gateway/internal/utils"
 	"gateway/models"
 	"github.com/google/uuid"
@@ -13,10 +13,10 @@ import (
 )
 
 type GatewayHandler struct {
-	usecase *usecase.GatewayUsecase
+	usecase internal.Usecase
 }
 
-func NewGatewayHandler(usecase *usecase.GatewayUsecase) *GatewayHandler {
+func NewGatewayHandler(usecase internal.Usecase) *GatewayHandler {
 	return &GatewayHandler{usecase: usecase}
 }
 

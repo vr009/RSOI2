@@ -5,6 +5,8 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -source=interfaces.go -destination=interfaces_mock.go -package=internal
+
 type Usecase interface {
 	GetLibList(page, size int64, city string) ([]models2.LibraryPaginationResponse, models2.StatusCode)
 	GetBookList(page, size int64, showAll bool, LibUid uuid.UUID) ([]models2.LibraryBookPaginationResponse, models2.StatusCode)
