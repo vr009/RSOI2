@@ -28,7 +28,7 @@ func run() error {
 	log.Printf("lib: %s", os.Getenv("LIB_SERVICE_URL"))
 	log.Printf("rating: %s", os.Getenv("RATING_SERVICE_URL"))
 	log.Printf("reservation: %s", os.Getenv("RESERVATION_SERVICE_URL"))
-	srv := http.Server{Handler: r, Addr: fmt.Sprintf(":%s", "8000")}
+	srv := http.Server{Handler: r, Addr: fmt.Sprintf(":%s", "8080")}
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
 	}

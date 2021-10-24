@@ -3,7 +3,7 @@ services:
   gateway:
     build: ./services/gateway/.
     ports:
-     - 8000:8000
+     - 8080:8080
     links:
       - library
       - rating
