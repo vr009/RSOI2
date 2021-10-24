@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"reservation/internal/usecase"
+	"reservation/internal"
 	"reservation/models"
 	"reservation/proto/reservation"
 )
 
 type GRPCHandler struct {
-	usecase *usecase.Usecase
+	usecase internal.ResUsecase
 }
 
-func NewGRPCHandler(usecase *usecase.Usecase) *GRPCHandler {
+func NewGRPCHandler(usecase internal.ResUsecase) *GRPCHandler {
 	return &GRPCHandler{usecase: usecase}
 }
 
@@ -83,7 +83,8 @@ func (h *GRPCHandler) ReturnBook(ctx context.Context, req *reservation.ReturnBoo
 	if err != nil {
 		return nil, err
 	}
-	status := h.usecase.ReturnBook(uid, name, models.ReturnBookRequest{Date: date, Condition: models.BookCondition(condition)})
+	retReq := models.ReturnBookRequest{Date: date, Condition: models.BookCondition(condition)}
+	status := h.usecase.ReturnBook(uid, name, retReq)
 	if status != models.Deleted {
 		return &reservation.ReturnBookResponse{Ok: false}, errors.New(fmt.Sprintf("%d", status))
 	}
