@@ -49,7 +49,7 @@ jobs:
           reporters: cli
 
       - name: Run API Tests
-        id: run-newman
+        id: run-newman2
         uses: anthonyvscode/newman-action@v1
         with:
           # TODO insert your variant
