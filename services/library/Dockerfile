@@ -2,7 +2,8 @@ FROM golang:1.17 AS builder
 
 ENV GO111MODULE=on
 
-ENV DATABASE_URL "postgres://jowzwttszfthin:9937fa7e54c3af76b0cd93478ff24ca6aaeea3eb1bc1afafdfced4823d9bc343@ec2-34-255-134-200.eu-west-1.compute.amazonaws.com:5432/d52cq9d3566196"
+ENV DATABASE_URL "postgres://ujctenexixakdj:e77e07688d8f4489a7a5e2324616405018b6d1387fdaa9176dabd81370582848@ec2-79-125-30-28.eu-west-1.compute.amazonaws.com:5432/dbpu8qgisgfd9f"
+
 
 WORKDIR /opt/app
 
