@@ -56,7 +56,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.AWS_PRVATE_KEY }}
-          script: cd goProj/rsoi-2021-lab2-microservices-vr009 && chmod +x compose_up.sh && ./compose_up.sh
+          script: cd goProj/rsoi-2021-lab2-microservices-vr009 && sudo docker-compose up -d
 
       - name: Run API Tests
         id: run-newman1
