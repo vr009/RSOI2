@@ -2,9 +2,7 @@ version: "3"
 services:
   gateway:
     hostname: gateway
-    build:
-      context: .
-      dockerfile: ./services/gateway/.
+    build: ./services/gateway/.
     ports:
       - 8080:8080
     links:
@@ -20,9 +18,7 @@ services:
 
   library:
     hostname: library
-    build:
-      context: .
-      dockerfile: ./services/library/.
+    build: ./services/library/.
     ports:
       - 50051:50051
     command:
@@ -39,9 +35,7 @@ services:
       - ./reservation
 
   rating:
-    build:
-      context: .
-      dockerfile: ./services/rating/.
+    build: ./services/rating/.
     ports:
       - 50053:50053
     command:
