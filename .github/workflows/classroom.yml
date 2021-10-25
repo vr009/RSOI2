@@ -26,15 +26,19 @@ jobs:
         run: |
           ls
           cd ./services/gateway/internal
+          ls
           go mod tidy
           go test ./...
           cd ../../library/internal/
+          ls
           go mod tidy
           go test ./...
           cd ../../rating/internal/
+          ls
           go mod tidy
           go test ./...
           cd ../../reservation/internal/
+          ls
           go mod tidy
           go test ./...
       - uses: akhileshns/heroku-deploy@v3.12.12
