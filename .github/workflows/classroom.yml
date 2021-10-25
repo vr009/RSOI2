@@ -43,7 +43,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.AWS_PRIVATE_KEY }}
+          key: ${{ secrets.AWS_PRVATE_KEY }}
           script: chmod +x compose_up.sh && ./compose_up.sh
 
       - name: Run API Tests
