@@ -12,7 +12,7 @@ WORKDIR /opt/app
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 8080
 
 RUN go mod tidy
 
