@@ -42,6 +42,7 @@ jobs:
           heroku_app_name: "testforrsoi"
           heroku_email: slavarianov@yandex.ru
           usedocker: true
+          dontuseforce: false
 
       - name: Run API Tests
         id: run-newman
