@@ -116,7 +116,11 @@ func (h *GatewayHandler) GetBook(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&reqParsed)
 	if err != nil {
-		utils.Response(w, models.BadRequest, "", nil)
+		errorStr := models.ValidationErrorResponse{
+			Message: "Incorrect body attached",
+		}
+		errBody, _ := json.Marshal(errorStr)
+		utils.Response(w, models.BadRequest, "", errBody)
 		return
 	}
 
@@ -125,7 +129,14 @@ func (h *GatewayHandler) GetBook(w http.ResponseWriter, r *http.Request) {
 	req.TillDate, err = time.Parse(layout, reqParsed.TillDate)
 
 	if err != nil {
-		utils.Response(w, models.BadRequest, "", nil)
+		errorStr := models.ValidationErrorResponse{
+			Message: "Incorrect body attached",
+			Errors: map[string]string{
+				"date": "invalid date note",
+			},
+		}
+		errBody, _ := json.Marshal(errorStr)
+		utils.Response(w, models.BadRequest, "", errBody)
 		return
 	}
 	validErr := utils.Validate(req)

@@ -1,8 +1,8 @@
 package models
 
 type ValidationErrorResponse struct {
-	Message string             `json:"message"`
-	Errors  []ErrorDescription `json:"errors"`
+	Message string      `json:"message"`
+	Errors  interface{} `json:"errors"`
 }
 
 type ErrorDescription struct {

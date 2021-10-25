@@ -38,6 +38,14 @@ jobs:
           go test ./...
           cd ../../..
 
+      - name: deploy in AWS
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.AWS_PRIVATE_KEY }}
+          script: chmod +x compose_up.sh && ./compose_up.sh
+
       - name: Run API Tests
         id: run-newman1
         uses: anthonyvscode/newman-action@v1
