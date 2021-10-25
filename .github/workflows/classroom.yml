@@ -24,13 +24,18 @@ jobs:
           go-version: 1.16
       - name: Tests
         run: |
+          ls
           cd ./services/gateway/internal
+          go mod tidy
           go test ./...
           cd ../../library/internal/
+          go mod tidy
           go test ./...
           cd ../../rating/internal/
+          go mod tidy
           go test ./...
           cd ../../reservation/internal/
+          go mod tidy
           go test ./...
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
