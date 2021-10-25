@@ -26,9 +26,7 @@ services:
 
   reservation:
     hostname: reservation
-    build:
-      context: .
-      dockerfile: ./services/reservation/.
+    build: ./services/reservation/.
     ports:
       - 50052:50052
     command:
