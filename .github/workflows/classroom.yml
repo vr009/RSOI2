@@ -36,6 +36,7 @@ jobs:
           cd ../../reservation/internal/
           go mod tidy
           go test ./...
+          cd ../../..
 
       - name: Run API Tests
         id: run-newman
@@ -50,7 +51,6 @@ jobs:
         id: run-newman2
         uses: anthonyvscode/newman-action@v1
         with:
-          # TODO insert your variant
           collection: v4/postman/[rsoi] postman_collection.json
           environment: v4/postman/[rsoi][heroku] postman_environment.json
           delayRequest: 50
